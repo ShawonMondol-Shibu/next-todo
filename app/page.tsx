@@ -61,8 +61,10 @@ export default function Home() {
       <section>
         {todos.map((title, index) => (
           <Card key={index}>
-            <CardContent className="flex items">
-              <span>{index + 1}</span>
+            <CardContent className="flex items-center gap-5">
+              <Button variant={"outline"} size={"sm"}>
+                {index + 1}
+              </Button>
               <CardTitle>{title}</CardTitle>
             </CardContent>
           </Card>
