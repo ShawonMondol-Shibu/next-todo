@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { todo } from "node:test";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 
@@ -21,23 +22,35 @@ const formSchema = z.object({
 
 export default function Home() {
   const [todos, setTodos] = useState<string[]>([]);
+  useEffect(() => {
+    const todo = localStorage.getItem("todo");
+    if (todo) {
+      setTodos(JSON.parse(todo));
+    }
+  }, []);
+  useEffect(() => {
+    if (todos.length > 0) {
+      localStorage.setItem("todo", JSON.stringify([...todos]));
+    }
+  }, [todos]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { title: "" },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onReset(values: z.infer<typeof formSchema>) {
     const title: string = values.title;
     setTodos([...todos, title]);
   }
 
+  console.log(todos);
   return (
-    <main className="container m-auto">
+    <main className="container m-auto px-5">
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4 max-w-md m-auto flex items-center justify-center gap-5"
+          onReset={form.handleSubmit(onReset)}
+          className="space-y-4 w-lg m-auto mt-10  flex items-center justify-center gap-5"
         >
           <FormField
             control={form.control}
@@ -53,13 +66,13 @@ export default function Home() {
             )}
           />
           <div>
-            <Button type="submit">Add Task</Button>
+            <Button type="reset">Add Task</Button>
           </div>
         </form>
       </Form>
 
-      <section>
-        {todos.map((title, index) => (
+      <section className="space-y-5 mt-10">
+        {todos.map((title: string, index: number) => (
           <Card key={index}>
             <CardContent className="flex items-center gap-5">
               <Button variant={"outline"} size={"sm"}>
