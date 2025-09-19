@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Trash2 } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast, Toaster } from "sonner";
@@ -24,6 +24,7 @@ const formSchema = z.object({
 
 export default function Home() {
   const [todos, setTodos] = useState<string[]>([]);
+  const [editTodo, setEditTodo] = useState(false);
 
   useEffect(() => {
     const todo = localStorage.getItem("todo");
@@ -35,6 +36,16 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem("todo", JSON.stringify([...todos]));
   }, [todos]);
+
+  const todoEdit = () => {
+    if (editTodo === true) setEditTodo(false); else setEditTodo(true)
+  };
+
+  const todoChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
+    e.preventDefault()
+    const todotitle = e.currentTarget.value;
+    alert(todotitle)
+  }
 
   const deleteTodo = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -92,16 +103,29 @@ export default function Home() {
                 <Button variant={"outline"} size={"sm"}>
                   {index + 1}
                 </Button>
-                <CardTitle className="capitalize">{title}</CardTitle>
+                <CardTitle
+                  contentEditable={editTodo}
+                  onChange={todoChange}
+                  
+                  className={`capitalize p-2 rounded ${editTodo?"border-2 outline-1": "border-none"}`}
+                >
+                  {title}
+                </CardTitle>
               </div>
-              <Button
-                variant={"ghost"}
-                size={"icon"}
-                onClick={deleteTodo}
-                value={title}
-              >
-                <Trash2 />{" "}
-              </Button>
+              <div>
+                <Button variant={"ghost"} size={"icon"} onClick={todoEdit} className={editTodo? "bg-red-500": "bg-green-500"}>
+                  {" "}
+                  <Edit />{" "}
+                </Button>
+                <Button
+                  variant={"ghost"}
+                  size={"icon"}
+                  onClick={deleteTodo}
+                  value={title}
+                >
+                  <Trash2 />{" "}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ))}
